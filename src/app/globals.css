@@ -1,26 +1,416 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================================
+   DESIGN TOKENS — Light (default) theme
+   Palette: slate/cyan. `:root` holds the light values; the `.dark` class is
+   toggled on <html> by next-themes, so every token (and every gradient that
+   reads it) switches with the theme. No purple tokens remain.
+   ========================================================================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --background: #f8fafc;
+  --foreground: #101827;
+  --card: #ffffff;
+  --card-foreground: #101827;
+  --popover: #ffffff;
+  --popover-foreground: #101827;
+
+  /* Brand accents */
+  --primary: #0284c7;
+  --primary-foreground: #ffffff;
+  --secondary: #eef3f8;
+  --secondary-foreground: #1e293b;
+  --accent: #0284c7;
+  --accent-foreground: #ffffff;
+  /* Text-safe accent: #0284C7 only reaches 3.9:1 on the light background,
+     so small accent-coloured text uses this darker shade (5.7:1) instead. */
+  --accent-text: #0369a1;
+  --muted: #eef3f8;
+  --muted-foreground: #475569;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  /* Lines & focus */
+  --border: rgb(100 116 139 / 0.28);
+  --input: rgb(100 116 139 / 0.4);
+  --ring: #0284c7;
+
+  --radius: 0.9rem;
+
+  /* Charts / sidebar tokens kept for shadcn component compatibility */
+  --chart-1: #0284c7;
+  --chart-2: #0891b2;
+  --chart-3: #0ea5e9;
+  --chart-4: #06b6d4;
+  --chart-5: #0d9488;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #101827;
+  --sidebar-primary: #0284c7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef3f8;
+  --sidebar-accent-foreground: #101827;
+  --sidebar-border: rgb(100 116 139 / 0.28);
+  --sidebar-ring: #0284c7;
+
+  /* Typography */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Reusable gradients, glow and elevation (all theme-aware) */
+  /* Dark enough to stay readable on the light background. */
+  --gradient-brand: linear-gradient(135deg, #0284c7 0%, #0e7490 100%);
+  --gradient-cta: linear-gradient(135deg, #0369a1 0%, #0e7490 100%);
+  --glow-accent: 0 14px 30px -18px rgb(2 132 199 / 0.55);
+  --glow-cta: 0 14px 30px -16px rgb(2 132 199 / 0.5);
+  --shadow-card: 0 18px 40px -30px rgb(16 24 39 / 0.35);
+}
+
+/* =========================================================================
+   DESIGN TOKENS — Dark theme
+   Primary background #101827, surfaces #1E293B, electric cyan accents.
+   ========================================================================= */
+.dark {
+  --background: #101827;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+
+  --primary: #38bdf8;
+  /* Dark text on bright cyan keeps the contrast ratio high. */
+  --primary-foreground: #0b1220;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --accent: #38bdf8;
+  --accent-foreground: #0b1220;
+  /* Bright cyan clears 8:1 on the dark background, so text can match it. */
+  --accent-text: #38bdf8;
+  /* Slight slate tint so hovers stay visible on top of #1E293B cards. */
+  --muted: rgb(148 163 184 / 0.14);
+  --muted-foreground: #94a3b8;
+  --destructive: #f87171;
+  --destructive-foreground: #0b1220;
+
+  --border: rgb(148 163 184 / 0.22);
+  --input: rgb(148 163 184 / 0.3);
+  --ring: #38bdf8;
+
+  --chart-1: #38bdf8;
+  --chart-2: #67e8f9;
+  --chart-3: #0ea5e9;
+  --chart-4: #06b6d4;
+  --chart-5: #2dd4bf;
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #0b1220;
+  --sidebar-accent: rgb(148 163 184 / 0.14);
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: rgb(148 163 184 / 0.22);
+  --sidebar-ring: #38bdf8;
+
+  /* Bright cyan gradients read best on the deep navy background. */
+  --gradient-brand: linear-gradient(135deg, #38bdf8 0%, #67e8f9 100%);
+  /* Electric-cyan CTA: dark --primary-foreground label keeps it readable. */
+  --gradient-cta: linear-gradient(135deg, #38bdf8 0%, #67e8f9 100%);
+  --glow-accent: 0 0 44px rgb(56 189 248 / 0.22);
+  --glow-cta: 0 16px 36px -16px rgb(56 189 248 / 0.45);
+  --shadow-card: 0 20px 44px -26px rgb(0 0 0 / 0.7);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-text: var(--accent-text);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    /* Smooth in-page navigation with a sticky-navbar scroll offset so
+       anchored sections never land underneath the fixed header. */
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    /* Prevents accidental horizontal overflow from decorative glows. */
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+    /* Subtle color fade when the theme switches. Reduced-motion users get
+       the global override below, so this never fights their preference. */
+    transition:
+      background-color 300ms ease,
+      color 300ms ease;
+  }
+
+  /* Chrome surfaces fade with the theme as well. */
+  header,
+  footer {
+    transition:
+      background-color 300ms ease,
+      border-color 300ms ease;
+  }
+
+  /* Visible, consistent keyboard focus across every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    /* Cyan highlight that keeps --foreground text readable in both themes. */
+    background: rgb(56 189 248 / 0.35);
+    color: var(--foreground);
+  }
+
+  /* Themed scrollbars. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--muted-foreground) 65%, transparent);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =========================================================================
+   CUSTOM UTILITIES
+   ========================================================================= */
+
+/** Gradient headline text — reads --gradient-brand, so it re-themes itself. */
+@utility text-gradient {
+  background-image: var(--gradient-brand);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/** Animated variant of the gradient headline used in the hero. */
+@utility text-gradient-animated {
+  background-image: var(--gradient-brand);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 8s ease-in-out infinite;
+}
+
+/**
+ * Primary call-to-action surface: cyan gradient with a theme-tuned glow.
+ * The label colour comes from --primary-foreground (white in light mode,
+ * deep navy in dark mode) so contrast stays >= 4.5:1 against each gradient.
+ */
+@utility bg-cta {
+  background-image: var(--gradient-cta);
+  color: var(--primary-foreground);
+  box-shadow: var(--glow-cta);
+}
+
+/** Frosted card surface used across sections — adapts to card/border tokens. */
+@utility surface-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+/** Thin gradient hairline used as a decorative divider. */
+@utility gradient-line {
+  background-image: var(--gradient-brand);
+  background-size: 100% 100%;
+}
+
+/** Accent glow on hover: a drop shadow in light, a halo in dark. */
+@utility glow-on-hover {
+  transition:
+    background-color 300ms ease,
+    border-color 350ms ease,
+    box-shadow 350ms ease,
+    transform 350ms ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow: var(--glow-accent);
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgb(16 185 129 / 0.55);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 6px rgb(16 185 129 / 0);
+  }
+}
+
+/* =========================================================================
+   DECORATIVE BACKGROUNDS
+   ========================================================================= */
+
+/** Faint engineering-grid texture behind hero and section headers. */
+.bg-grid {
+  background-image:
+    linear-gradient(rgb(100 116 139 / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(100 116 139 / 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 0%, black 40%, transparent 100%);
+}
+
+/** Blurred gradient orbs used as ambient light behind content. */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   ACCESSIBILITY — reduced motion
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================================
+   PRINT — resume page only
+   Strips navigation, buttons and theme chrome so the browser's "Print /
+   Save as PDF" produces a clean, professional light CV in either theme.
+   ========================================================================= */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    transition: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .surface-card,
+  .print-card {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  .text-gradient,
+  .text-gradient-animated {
+    background: none !important;
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+  }
+
+  a {
+    color: #111827 !important;
+    text-decoration: none;
+  }
+
+  section {
+    break-inside: avoid;
+  }
 }
