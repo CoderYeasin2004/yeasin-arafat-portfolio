@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { navLinks } from "@/config/site";
 import { profile } from "@/data/profile";
+import { FooterActions } from "@/components/layout/FooterActions";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 
 /**
@@ -64,6 +65,9 @@ export function Footer() {
           <p>
             © <CopyrightYear /> {profile.name}. All rights reserved.
           </p>
+
+          {/* Availability status + back-to-top, filling the empty corner. */}
+          <FooterActions className="mt-1 sm:mt-0" />
         </div>
       </div>
     </footer>
