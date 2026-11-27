@@ -71,13 +71,6 @@ function validate(values: ContactValues): FieldErrors {
 }
 
 /** Builds a prefilled mailto URL from the current form values. */
-function buildMailtoUrl(values: ContactValues): string {
-  const params = new URLSearchParams({
-    subject: values.subject.trim(),
-    body: `From: ${values.name.trim()} <${values.email.trim()}>\n\n${values.message.trim()}`,
-  });
-  return `mailto:${profile.email}?${params.toString()}`;
-}
 
 interface FieldProps {
   id: string;
@@ -116,63 +109,72 @@ function Field({ id, label, error, children }: FieldProps) {
 export function Contact() {
   const [values, setValues] = useState<ContactValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<StatusState>({ kind: "idle", message: "" });
-  /** Guards against duplicate submissions and powers the copy fallback. */
+  const [status, setStatus] = useState<StatusState>({
+    kind: "idle",
+    message: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (field: FieldName, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
+
     // Clear a field's error as soon as the visitor starts fixing it.
     setErrors((current) => ({ ...current, [field]: undefined }));
   };
+  
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (isSubmitting) return;
+const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
 
-    const validationErrors = validate(values);
-    if (Object.values(validationErrors).some(Boolean)) {
-      setErrors(validationErrors);
-      setStatus({
-        kind: "error",
-        message: "Please fix the highlighted fields and try again.",
-      });
-      return;
+  const validationErrors = validate(values);
+  setErrors(validationErrors);
+
+  if (Object.keys(validationErrors).length > 0) {
+    return;
+  }
+
+  setIsSubmitting(true);
+  setStatus({ kind: "idle", message: "" });
+
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        subject: values.subject.trim(),
+        message: values.message.trim(),
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Failed to send message.");
     }
 
-    setIsSubmitting(true);
-
-    // No configured recipient: fall back to copying the draft instead of
-    // pretending a message was delivered.
-    if (!profile.email) {
-      try {
-        const draft = `Subject: ${values.subject.trim()}\n\n${values.message.trim()}\n\n— ${values.name.trim()} (${values.email.trim()})`;
-        await navigator.clipboard.writeText(draft);
-        setStatus({
-          kind: "info",
-          message:
-            "Your message was copied. Email delivery isn't configured yet — set an address in src/data/profile.ts, or reach me on GitHub or LinkedIn below.",
-        });
-      } catch {
-        setStatus({
-          kind: "error",
-          message:
-            "Email delivery isn't configured yet, and copying failed. Please use the GitHub or LinkedIn links below.",
-        });
-      } finally {
-        setIsSubmitting(false);
-      }
-      return;
-    }
-
-    // Open the visitor's default mail client with a prefilled draft.
-    window.location.href = buildMailtoUrl(values);
     setStatus({
       kind: "success",
-      message: "Your email app should open with the message ready to send.",
+      message: "Your message has been sent successfully!",
     });
+
+    setValues(initialValues);
+    setErrors({});
+  } catch (error) {
+    setStatus({
+      kind: "error",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+    });
+  } finally {
     setIsSubmitting(false);
-  };
+  }
+};
 
   const statusStyles: Record<Exclude<StatusKind, "idle">, string> = {
     success:
@@ -310,7 +312,7 @@ export function Contact() {
                 </Button>
 
                 <p className="text-xs text-muted-foreground">
-                  Opens your default email app — nothing is stored on this site.
+                 Your message will be sent directly to my inbox.
                 </p>
               </div>
             </form>
