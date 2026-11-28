@@ -329,11 +329,56 @@
   }
 }
 
+/**
+ * Hero name caret: a thin 2px line that sits inline, immediately after the
+ * last revealed character, and blinks until typing finishes.
+ *
+ * The blink fades in and out on an ease-in-out curve instead of snapping
+ * between two states, so it stays quiet rather than pulling focus.
+ */
+.typing-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.75em;
+  margin-inline-start: 0.04em;
+  vertical-align: -0.02em;
+  animation: caret-blink 1.4s ease-in-out infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/**
+ * Hero name reveal: each newly typed character fades in over a short, fixed
+ * window so characters land smoothly instead of popping in mid-frame. The
+ * key stays stable for characters already on screen, so the animation runs
+ * once per character and the line never re-flashes.
+ */
+[data-typing-char] {
+  animation: char-reveal 120ms ease-out both;
+}
+
+@keyframes char-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* =========================================================================
    DECORATIVE BACKGROUNDS
    ========================================================================= */
 
-/** Faint engineering-grid texture behind hero and section headers. */
+/** Faint engineering-grid texture — rendered site-wide by <GridBackground />. */
 .bg-grid {
   background-image:
     linear-gradient(rgb(100 116 139 / 0.16) 1px, transparent 1px),
@@ -366,6 +411,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Hero name typing: reveal the full name at first paint, before hydration. */
+  [data-typing-char] {
+    opacity: 1 !important;
   }
 }
 

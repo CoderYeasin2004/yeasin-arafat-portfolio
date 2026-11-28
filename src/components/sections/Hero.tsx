@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/shared/Reveal";
 import { SocialLinks } from "@/components/shared/SocialLinks";
+import { TypingName } from "@/components/shared/TypingName";
 import { profile } from "@/data/profile";
 
 /**
@@ -96,8 +97,8 @@ export function Hero() {
       id="home"
       className="relative overflow-hidden scroll-mt-24 pb-24 pt-32 sm:pt-36 lg:pb-32 lg:pt-44"
     >
-      {/* Decorative backdrop */}
-      <div aria-hidden className="bg-grid absolute inset-0 -z-10" />
+      {/* Ambient light — the shared grid backdrop now lives in
+          <GridBackground /> so it runs behind every section. */}
       <div className="orb -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 bg-cyan-500/25" />
 
       <div className="mx-auto grid max-w-6xl items-center gap-16 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
@@ -121,8 +122,11 @@ export function Hero() {
           </Reveal>
 
           <Reveal delay={0.16}>
-            <h1 className="text-gradient-animated mt-3 text-5xl font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-              {profile.name}
+            <h1
+              aria-label={profile.name}
+              className="text-gradient-animated mt-3 text-5xl font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl"
+            >
+              <TypingName name={profile.name} />
             </h1>
           </Reveal>
 

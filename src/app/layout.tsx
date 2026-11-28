@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { CodeRainBackground } from "@/components/shared/CodeRainBackground";
+import { GridBackground } from "@/components/shared/GridBackground";
 import { siteConfig } from "@/config/site";
 import { profile } from "@/data/profile";
 import "./globals.css";
@@ -67,6 +69,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
+          {/* Site-wide backdrop: shared grid texture, then the code rain on
+              top of it (later siblings paint above in the same layer). */}
+          <GridBackground />
+          <CodeRainBackground />
+
           {/* Keyboard users skip the fixed navigation entirely. */}
           <a
             href="#main-content"

@@ -48,6 +48,27 @@ export interface ExperienceEntry {
   isPlaceholder: boolean;
 }
 
+/**
+ * Education details rendered by the homepage Education section.
+ *
+ * Deliberately limited to the facts that were supplied — no GPA, graduation
+ * year or achievements are modelled, so none can ever be rendered by mistake.
+ */
+export interface EducationDetails {
+  /** Full name of the institute. */
+  institute: string;
+  /** Department / programme of study. */
+  department: string;
+  /** Qualification being pursued. */
+  degree: string;
+  /** Current semester exactly as stated, e.g. "8th Semester Running". */
+  semester: string;
+  /** Short status pill, e.g. "Currently Studying". */
+  status: string;
+  /** Institute location. */
+  location: string;
+}
+
 /** Education entry for the resume page. */
 export interface EducationEntry {
   id: string;
